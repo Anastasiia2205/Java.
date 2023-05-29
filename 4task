@@ -1,0 +1,106 @@
+MAIN.JAVA
+public class Main {
+    public static void main(String[] args) {
+        HashMap map = new HashMap(); // объявляем HashMap
+        // добавляем эл-ты
+        map.put("Dog", "Hasky");
+        map.put("Color", "Red");
+        map.put("Weather", "Sunny");
+        map.put("Weather", "Rainy"); // меняем значение в Weather
+        map.remove("Color"); // удаляем color
+        for (String item : map.keySet()) {
+            System.out.println(item + " : " + map.get(item)); // вывод HashMap
+        }
+    }
+}
+
+
+HASHMAP.JAVA
+import java.util.ArrayList;
+import java.util.List;
+
+public class HashMap {
+    private List<String> keys = new ArrayList<>(); // список с ключами
+    private List<String> values = new ArrayList<>(); // список со значениями
+
+    public HashMap() { // пустой конструктор
+
+    }
+
+    // метод добавления и изменения значения
+    public void put(String key, String value) {
+        if (!containsKey(key)) { // если ключ не найден в списке, то добавляем его и значение
+            keys.add(key);
+            values.add(value);
+        } else { // если ключ найден, меняем значение на соответствующей позиции в списке
+            // changeValue()
+            int i = 0; // переменная-счетчик для обращения к соответствующему эл-ту списка
+            for (String item : keys) { // цикл для перебора
+                if (item.equals(key)) { // сравниваем очередную итерацию с необходимым ключом
+                    changeValue(i, value); // если совпало, вызываем метод для смены значения и в параметры записываем
+                    // индекс эл-та, кот необходимо заменить и заменяемое значение
+                    break; // выходим из цикла, если есть рез-т
+                }
+                i++;
+            }
+        }
+    }
+
+    // геттер для эл-та по ключу
+    public String get(String key) {
+        int i = 0; // переменная-счетчик
+        for (String item : keys) { // цикл для перебора
+            if (item.equals(key)) { // сравниваем итерацию с нужным ключом
+                return values.get(i); // если есть совпадение, возвращаем значение под нужным индексом
+            }
+            i++;
+        }
+        return null; // если совпадений не найдено, возвращаем null
+    }
+
+    // метод удаления
+    public void remove(String key) {
+        int i = 0; // переменная-счетчик
+        for (String item : keys) { // цикл для перебора
+            if (item.equals(key)) { // сравниваем ключи
+                keys.remove(i); // если нашлось совпадение, удаляем ключ
+                values.remove(i); // и удаляем значение
+                break; // останавливаем цикл
+            }
+            i++;
+        }
+    }
+
+    // метод нахождения ключа
+    public boolean containsKey(String key) {
+        for (String item : keys) { // цикл для перебора
+            if (item.equals(key)) { // сравниваем ключи
+                return true; // если есть совпадение, возвращаем true
+            }
+        }
+        return false; // если совпадений нет, возвращаем false
+    }
+
+    // метод изменения значения в списке и сохранения последующих эл-ов
+    private void changeValue(int index, String value) {
+        List<String> temp = new ArrayList<>(); // создаем еще один список для сохранения промежут-х эл-ов
+        for (int i = index; i < keys.size(); i++) { // цикл для перебора значений. начинаем с индекса, кот нужно заменить
+            if (i != index) { // если итерация не равна нужному индексу, просто копируем значение исходной ячейки
+                temp.add(values.get(index));
+            } else { // в противном случае записываем новое значение
+                temp.add(value);
+            }
+            values.remove(index); // после сохранения ячейки в промежуточном списке, удаляем ее из исходного
+        }
+        for (int i = 0; i < keys.size() - index; i++) { // когда предыдущ цикл закончил работу, копируем новый список
+            // в новый
+            values.add(temp.get(i));
+        }
+    }
+
+    // геттер списка ключей
+
+    public List<String> keySet() {
+        return keys;
+    }
+}

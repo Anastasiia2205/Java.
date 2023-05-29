@@ -1,0 +1,201 @@
+MAIN.JAVA
+public class Main {
+    public static void main(String[] args) {
+        GUI gui = new GUI();
+        gui.setVisible(true);
+    }
+}
+
+
+GUI.JAVA
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+public class GUI extends JFrame {
+
+    private Container container;
+    private JTextField inputLenght = new JTextField();
+    private JLabel inputLenghtLabel = new JLabel("Input lenght of list");
+    private JButton createTable = new JButton("Create");
+    private JTable table;
+    private JTextField startIndex = new JTextField();
+    private JTextField endIndex = new JTextField();
+    private JButton reformList = new JButton("Remove indexes");
+    private JLabel inputValues = new JLabel("Input values into list");
+    private JLabel startIndexLabel = new JLabel("Input n");
+    private JLabel endIndexLabel = new JLabel("Input k");
+
+    public GUI() {
+        super("Task 2");
+        int width = Toolkit.getDefaultToolkit().getScreenSize().width / 2-320;
+        int height = Toolkit.getDefaultToolkit().getScreenSize().height / 2-248;
+        this.setBounds(width, height, 640, 480);
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        container = this.getContentPane();
+        container.setLayout(new GridLayout(7,1,1,1));
+
+        createTable.addActionListener(new ActionListener() {  // кнопка для создания таблицы
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                table = new JTable(Integer.parseInt(inputLenght.getText()),1);
+                container.removeAll();
+                container.add(inputValues);
+                container.add(new JScrollPane(table));
+                container.add(startIndexLabel);
+                container.add(startIndex);
+                container.add(endIndexLabel);
+                container.add(endIndex);
+                container.add(reformList);
+                container.revalidate();
+            }
+        });
+        reformList.addActionListener(new ActionListener() { // кнопка для удаления эл-ов списка
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                LinkedList linkedList = new LinkedList();
+                // создаем односвязный список
+                for (int i = 0; i < table.getRowCount(); i++) {
+                    linkedList.add(Integer.parseInt(String.valueOf(table.getValueAt(i, 0))));
+                    // добавляем эл-ты в список
+                }
+                linkedList.removeRange(Integer.parseInt(startIndex.getText()), Integer.parseInt(endIndex.getText()));
+                // удаляем эл-ты по заданным индексам
+                int[] resultArr = linkedList.toArray();
+                // забираем рез-т
+                table = new JTable(resultArr.length, 1); //создаем новую табл
+                for (int i = 0; i < resultArr.length; i++) { //заполняем обновленную табл
+                    Object obj = resultArr[i];
+                    table.setValueAt(obj, i, 0);
+                }
+                container.removeAll();
+                container.add(inputValues);
+                container.add(new JScrollPane(table));
+                container.add(startIndexLabel);
+                container.add(startIndex);
+                container.add(endIndexLabel);
+                container.add(endIndex);
+                container.add(reformList);
+                container.revalidate();
+            }
+        });
+
+        container.add(inputLenghtLabel);
+        container.add(inputLenght);
+        container.add(createTable);
+    }
+}
+
+LINKEDLIST.JAVA
+public class LinkedList {
+
+    private Node head; // голова списка
+    private int count; // кол-во эл-ов списка
+
+    public class Node { // описание узла
+        public int data; // сами числа
+        public Node next; // ссылка на след узел
+        public int exponent; // порядковый номер узла
+
+        public Node(int data) { // конструктор узла
+            this.data = data; // присваиваем значение
+            this.next = null; // пустая ссылка на след эл-т
+            this.exponent = count; // порядковый номер узла равняется текущему кол-ву эл-ов
+            count = count + 1; // увеличивается кол-во эл-ов
+        }
+
+    }
+
+    public void add(int data) { // добавление нового узла
+        Node newNode = new Node(data); // создание новый узел
+        Node currentNode = head; // переменная-переборщик узлов
+
+        if (head == null) { // проверка на наличие головы
+            head = newNode; // если голова пуста - присваиваем ей новый узел
+        } else {
+            while (currentNode.next != null) { // если голова не пустая-запускаем цикл, кот перебирает все узлы
+                // вплоть до последнего
+                currentNode = currentNode.next; // ссылаемся на след узел
+            }
+            currentNode.next = newNode; // когда цикл полностью отработает, переменная-переборщик становится последним
+            // узлом. Ссылкой к след эл-ту делаем newNode
+        }
+    }
+
+    public void remove(double data) { // удаление узла по значению
+        Node currentNode = head; // переменная-переборщик
+        Node previousNode = null; // переменная, хранящая предыдущий узел
+
+        while (currentNode.next != null) { // перебираем узлы
+            if (currentNode.data == data) { // если текущий узел = запрашиваемому значению..
+                if (currentNode == head) { // ..и если текущий узел - голова
+                    head = currentNode.next; // присваиваем голове след узел
+                } else {
+                    previousNode.next = currentNode.next; // стираем ссылку на currentNode у предыдущего эл-та
+
+                }
+            }
+            previousNode = currentNode; // перебор. предыдущий эл-т становится текущим
+            currentNode = currentNode.next; // а текущий эл-т становится следующим
+        }
+        reformExponents(); // переопределяем индексы эл-ов
+        }
+
+        public void print() { // печать списка
+            Node currentNode = head; // переменная-переборщик
+
+
+            while (currentNode != null) { // цикл, работающий до тех пор, пока текущий узел не станет нулевым
+                System.out.print(currentNode.data); // выводим данные узла
+                currentNode = currentNode.next; // ссылаемся на след эл-т
+            }
+        }
+
+        public void removeRange(int n, int k) { // удаление узлов по индексу
+            Node currentNode = head; // переменная-переборщик
+            Node previousNode = null; // переменная, хранящая предыдущий узел
+
+            while (currentNode != null) { // цикл, работающий до тех пор, пока текущ узел не станет нулевым
+                if (currentNode.exponent >= n && currentNode.exponent <= k) { // если индекс текущ узла >=
+                    // и если он <= к...
+                    if (currentNode == head) { // если текущ узел - голова
+                        head = currentNode.next; // присваиваем голове след эл-т
+                    } else {
+                        previousNode.next = currentNode.next; // стираем ссылку на currentNode у предыдущ эл-та
+                        currentNode = head; // перезапускаем перебор
+
+                    }
+                }
+                previousNode = currentNode; // перебор. предыдущ эл-т становится текущим
+                currentNode = currentNode.next; // а текущ становится следующим
+            }
+            reformExponents(); // переопределяем индексы эл-ов
+        }
+
+        private void reformExponents() { // переопределение индексов узлов
+            Node currentNode = head; // перем-переборщик
+            int i = 0; // перем, считающая индекс
+            while (currentNode != null) { // цикл, работающий до тех пор, пока текущ узел не станет нулевым
+                currentNode.exponent = i; // присваиваем эл-ту новый индекс
+                i++; // увеличиваем индекс
+                count = currentNode.exponent + 1; // увеличиваем общее кол-во эл-ов
+                currentNode = currentNode.next; // переходим к след узлу
+            }
+        }
+
+        public int size() { return count; }
+
+
+
+        public int[] toArray() { // преобразование списка в массив
+            int[] result = new int[count];
+            Node currentNode = head;
+            for (int i = 0; i < count; i++) {
+                result[i] = currentNode.data;
+                currentNode = currentNode.next;
+            }
+            return result;
+    }
+}
